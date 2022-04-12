@@ -1,11 +1,50 @@
 import React, { useState } from "react";
 import "../App.css";
+import { useNavigate } from "react-router-dom";
+import axios from 'axios';
 
 function User() {
   const [regName, setRegName] = useState("");
   const [regEmail, setRegEmail] = useState("");
   const [regPhone, setRegPhone] = useState("");
   const [regPassword, setRegPassword] = useState("");
+  let history = useNavigate();
+  let userId = "";
+
+  React.useEffect(() => {
+
+    let user = sessionStorage.getItem("user_id");
+    if(!user){
+      history('/auth')
+    }
+    userId = user;
+    getUser(user);
+
+  }, [])
+
+  const getUser = async (user) => {
+
+    let userDate = await axios.get("http://localhost:5000/user/" + user);
+    console.log(userDate, "geetting dsgj ")
+
+    setRegEmail(userDate.data.email)
+    setRegName(userDate.data.name)
+    setRegPhone(userDate.data.phone)
+
+  }
+
+  const updateUser = async () => {
+    
+    const userDate = {
+        name: regName,
+        email: regEmail,
+        phone: regPhone
+    }
+
+    let user = await axios.put("http://localhost:5000/user/" + userId, userDate);
+    console.log(user, "what uis comming here")
+
+  }
 
   return (
     <div>
@@ -119,7 +158,7 @@ function User() {
                     </div>
                     <button
                       type="button"
-                      // onClick={() => registerUser()}
+                      onClick={() => updateUser()}
                       className="btn-custom mt-4"
                     >
                       submit

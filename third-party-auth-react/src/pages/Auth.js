@@ -3,6 +3,7 @@ import "../App.css";
 import Webcam from "react-webcam";
 // import impimage from "../img/main_wall_3.png";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 function b64toBlob(b64Data, contentType, sliceSize) {
   contentType = contentType || "";
@@ -48,6 +49,7 @@ function Auth() {
   const [regEmail, setRegEmail] = useState("");
   const [regPhone, setRegPhone] = useState("");
   const [regPassword, setRegPassword] = useState("");
+  let history = useNavigate();
 
   const dummyDate = async () => {
     var ImageURL = image; // 'photo' is your base64 image
@@ -69,8 +71,16 @@ function Auth() {
     console.log(data);
     setImage("");
     setEmail("");
-    setAlertMessage({ message: data.data.data, status: "success" });
-    setAlert(true);
+    // console.log(data.data._id['$oid'])
+    // console.log(Object.keys(data.data).length)
+    if(Object.keys(data.data).length > 1 ){
+      sessionStorage.setItem("user_id", data.data._id['$oid']);
+      history("/user");
+    }else{
+
+      setAlertMessage({ message: data.data.data, status: "warning" });
+      setAlert(true);
+    }
   };
 
   const registerUser = async () => {
@@ -109,6 +119,12 @@ function Auth() {
     // console.log("load.... :- " + imageSrc)
     setImage(imageSrc);
   }, [webcamRef]);
+
+  React.useEffect(() => {    
+    if(sessionStorage.getItem("user_id")){
+      history('/user')
+    }
+  })
 
   return (
     <div style={{ backgroundColor: "#d0d0d0" }}>
@@ -156,16 +172,13 @@ function Auth() {
                               className={`alert alert-${alertMessage.status} alert-dismissible fade show`}
                               role="alert"
                             >
-                              <strong>Hola!</strong> {alertMessage.message}
+                              {alertMessage.message}
                               <button
                                 type="button"
                                 className="btn-close"
                                 data-bs-dismiss="alert"
                                 aria-label="Close"
                               ></button>
-                              {alertMessage.message === "face matched" && (
-                                <h4>Login Successful</h4>
-                              )}
                             </div>
                           )}
 

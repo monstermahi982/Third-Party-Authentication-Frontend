@@ -6,9 +6,32 @@ import Home from "../pages/Home";
 import Org from "../pages/Org";
 import Auth from "../pages/Auth";
 import User from "../pages/User";
+import { useNavigate } from "react-router-dom";
 
-export default class NavbarCustom extends Component {
-  render() {
+function NavbarCustom() {
+
+  let userActive = false;
+  // let history = useNavigate();
+
+  React.useEffect(() => {
+
+    let user = sessionStorage.getItem("user_id");
+    if(user){
+      console.log(user, "laslskfg")
+      userActive =true;
+      
+    }
+
+  }, [])
+
+  const logout = () => {
+    console.log("calling")
+    sessionStorage.clear();
+    userActive = false;
+    // history("/auth");
+    window.location.reload()
+  }
+
     return (
       <Router>
         <div>
@@ -29,9 +52,18 @@ export default class NavbarCustom extends Component {
                   <Nav.Link as={Link} to={"/"}>
                     Home
                   </Nav.Link>
-                  <Nav.Link as={Link} to={"/auth"}>
+                  { userActive === true ? 
+                    <Nav.Link as={Link} to={"/auth"}>
                     Login/Register
                   </Nav.Link>
+                  :
+                  <Nav.Link>
+                    <button onClick={() => logout()}>
+                      Logout
+                    </button>
+                  </Nav.Link>
+                }
+                  
                   <Nav.Link as={Link} to={"/org"}>
                     Organization Account
                   </Nav.Link>
@@ -61,4 +93,5 @@ export default class NavbarCustom extends Component {
       </Router>
     );
   }
-}
+
+export default NavbarCustom;
