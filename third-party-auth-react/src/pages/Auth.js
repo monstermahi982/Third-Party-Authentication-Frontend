@@ -73,10 +73,11 @@ function Auth() {
     setEmail("");
     // console.log(data.data._id['$oid'])
     // console.log(Object.keys(data.data).length)
-    if(Object.keys(data.data).length > 1 ){
+    if (Object.keys(data.data).length > 1) {
       sessionStorage.setItem("user_id", data.data._id['$oid']);
+      window.location.reload();
       history("/user");
-    }else{
+    } else {
 
       setAlertMessage({ message: data.data.data, status: "warning" });
       setAlert(true);
@@ -120,8 +121,8 @@ function Auth() {
     setImage(imageSrc);
   }, [webcamRef]);
 
-  React.useEffect(() => {    
-    if(sessionStorage.getItem("user_id")){
+  React.useEffect(() => {
+    if (sessionStorage.getItem("user_id")) {
       history('/user')
     }
   })
