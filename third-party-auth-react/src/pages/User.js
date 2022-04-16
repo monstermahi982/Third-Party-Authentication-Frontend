@@ -8,16 +8,21 @@ function User() {
   const [regEmail, setRegEmail] = useState("");
   const [regPhone, setRegPhone] = useState("");
   const [regPassword, setRegPassword] = useState("");
+  const [alert, setAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState({
+    message: "testin",
+    status: "success",
+  });
   let history = useNavigate();
-  let userId = "";
+  const [userId, setUserId] = React.useState("");
 
   React.useEffect(() => {
 
     let user = sessionStorage.getItem("user_id");
-    if(!user){
+    if (!user) {
       history('/auth')
     }
-    userId = user;
+    setUserId(user);
     getUser(user);
 
   }, [])
@@ -34,15 +39,31 @@ function User() {
   }
 
   const updateUser = async () => {
-    
+
     const userDate = {
-        name: regName,
-        email: regEmail,
-        phone: regPhone
+      name: regName,
+      email: regEmail,
+      phone: regPhone
     }
 
-    let user = await axios.put("http://localhost:5000/user/" + userId, userDate);
-    console.log(user, "what uis comming here")
+    // using axios
+
+    let user = await axios.put("http://127.0.0.1:5000/user/" + userId, userDate);
+    if (user) {
+      setAlertMessage({
+        message: "User Updated",
+        status: "success",
+      })
+      setAlert(true)
+    }
+
+    // using fetch
+    // fetch("http://127.0.0.1:5000/user/" + userId,
+    //   {
+    //     method: 'PUT',
+    //     headers: { 'Content-Type': 'application/json' },
+    //     body: JSON.stringify(userDate)
+    //   }).then((data) => console.log(data)).catch((err) => console.log(err))
 
   }
 
@@ -104,6 +125,20 @@ function User() {
                         Update Personal Details
                       </h4>
                     </div>
+                    {alert && (
+                      <div
+                        className={`alert alert-${alertMessage.status} alert-dismissible fade show`}
+                        role="alert"
+                      >
+                        {alertMessage.message}
+                        <button
+                          type="button"
+                          className="btn-close"
+                          data-bs-dismiss="alert"
+                          aria-label="Close"
+                        ></button>
+                      </div>
+                    )}
                     <div className="form-group mt-2">
                       <input
                         type="text"
