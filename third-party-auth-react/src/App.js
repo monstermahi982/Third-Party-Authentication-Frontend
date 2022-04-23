@@ -1,7 +1,7 @@
 import "./App.css";
 import NavbarCustom from "./components/NavbarCustom";
 import FooterCustom from "./components/FooterCustom";
-import "bootstrap/dist/css/bootstrap.min.css";
+// import "bootstrap/dist/css/bootstrap.min.css";
 // import Home from "./pages/Home";
 // import Org from "./pages/Org";
 // import Auth from "./pages/Auth";
