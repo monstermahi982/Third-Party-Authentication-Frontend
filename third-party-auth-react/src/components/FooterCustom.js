@@ -7,9 +7,9 @@ export default class FooterCustom extends Component {
         <div
           style={{
             display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
+            // flexDirection: "column",
+            // alignItems: "center",
+            justifyContent: "space-evenly",
           }}
         >
           <h5>123-456-7890</h5>

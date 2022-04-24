@@ -20,45 +20,28 @@ export default function Home() {
   // setInterval(buttonClick, 100000);
 
   return (
-    <div>
-      <button onClick={() => buttonClick()}>MOnster push notification</button>
-      <Carousel>
-        <Carousel.Item>
-          <div
-            style={{
-              textAlign: "center",
-            }}
-          >
-            <img
-              className="d-block h-100 w-100"
-              src={impimage}
-              alt="First slide"
-            />
-            <Carousel.Caption style={{ textAlign: "center", top: "25%" }}>
-              <h1>Security is the main lock for your digital data</h1>
-            </Carousel.Caption>
+    <>
+      <div id="carouselExampleInterval" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner" style={{ maxHeight: '84.7vh' }}>
+          <div class="carousel-item active" data-bs-interval="10000">
+            <img src="/Security1.jpg" class="d-block w-100" alt="..." style={{ backgroundSize: 'cover' }} />
           </div>
-        </Carousel.Item>
-        <Carousel.Item>
-          <img
-            className="d-block h-100 w-100"
-            src={otherone}
-            alt="Second slide"
-          />
-        </Carousel.Item>
-      </Carousel>
-      <div
-        class="raw text-center"
-        style={{
-          alignItems: "center",
-          justifyContent: "center",
-          padding: 35,
-        }}
-      >
-        <h1>{"Built with Security & Comfort."}</h1>
-        <hr />
-        <p class="lead">Welcome to Third Party Authentication website</p>
+          <div class="carousel-item" data-bs-interval="1000">
+            <img src="/security2.png" class="d-block w-100" alt="..." style={{ backgroundSize: 'cover' }} />
+          </div>
+          <div class="carousel-item" data-bs-interval="1000">
+            <img src="/sec5.jpg" class="d-block w-100" alt="..." style={{ backgroundSize: 'cover' }} />
+          </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleInterval" data-bs-slide="prev">
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleInterval" data-bs-slide="next">
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Next</span>
+        </button>
       </div>
-    </div>
+    </>
   );
 }

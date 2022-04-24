@@ -33,7 +33,7 @@ function NavbarCustom() {
       <div>
         <Navbar bg="dark" variant={"dark"} expand="lg">
           <Container>
-            <img alt="Logo" src={final_default} width={64} height={64} />
+            <img alt="Logo" src={final_default} width={50} height={45} />
             <Navbar.Brand as={Link} to={"/"}>
               Third Party Auth System
             </Navbar.Brand>
@@ -49,31 +49,33 @@ function NavbarCustom() {
                   Home
                 </Nav.Link>
                 {userActive ?
-                  <Nav.Link>
-                    <button onClick={() => logout()}>
-                      Logout
-                    </button>
-                  </Nav.Link>
+                  <>
+                    <Nav.Link as={Link} to={"/user"}>
+                      Account
+                    </Nav.Link>
+                    <Nav.Link>
+                      <button className="btn btn-danger btn-sm" onClick={() => logout()}>
+                        Logout
+                      </button>
+                    </Nav.Link>
+                  </>
                   :
-
-                  <Nav.Link as={Link} to={"/auth"}>
-                    Login/Register
-                  </Nav.Link>
+                  <>
+                    <Nav.Link as={Link} to={"/org"} >
+                      Organization Account
+                    </Nav.Link>
+                    <Nav.Link
+                      href="https://github.com/RoyalTechie/Third-Party-Authentication-Frontend/blob/main/third-party-auth-react/README.md"
+                      target="_blank"
+                      rel="noreferrer noopener"
+                    >
+                      Documentation
+                    </Nav.Link>
+                    <Nav.Link as={Link} to={"/auth"}>
+                      Login/Register
+                    </Nav.Link>
+                  </>
                 }
-
-                <Nav.Link as={Link} to={"/org"}>
-                  Organization Account
-                </Nav.Link>
-                <Nav.Link as={Link} to={"/user"}>
-                  Account
-                </Nav.Link>
-                <Nav.Link
-                  href="https://github.com/RoyalTechie/Third-Party-Authentication-Frontend/blob/main/third-party-auth-react/README.md"
-                  target="_blank"
-                  rel="noreferrer noopener"
-                >
-                  Documentation
-                </Nav.Link>
               </Nav>
             </Navbar.Collapse>
           </Container>
