@@ -90,8 +90,8 @@ function Auth() {
     // console.log(Object.keys(data.data).length)
     if (Object.keys(data.data).length > 1) {
       sessionStorage.setItem("user_id", data.data.company_id);
-      // window.location.reload();
-      // history("/user");
+      window.location.reload();
+      history("/user");
     } else {
       setAlertMessage({ message: data.data.data, status: "warning" });
       setAlert(true);
