@@ -1,31 +1,31 @@
 import React, { useState } from "react";
 import "../App.css";
 import Webcam from "react-webcam";
-// import impimage from "../img/main_wall_3.png";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import Joi from 'joi';
 
 function b64toBlob(b64Data, contentType, sliceSize) {
   contentType = contentType || "";
   sliceSize = sliceSize || 512;
 
-  var byteCharacters = atob(b64Data); // window.atob(b64Data)
-  var byteArrays = [];
+  let byteCharacters = atob(b64Data); // window.atob(b64Data)
+  let byteArrays = [];
 
-  for (var offset = 0; offset < byteCharacters.length; offset += sliceSize) {
-    var slice = byteCharacters.slice(offset, offset + sliceSize);
+  for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+    let slice = byteCharacters.slice(offset, offset + sliceSize);
 
-    var byteNumbers = new Array(slice.length);
-    for (var i = 0; i < slice.length; i++) {
+    let byteNumbers = new Array(slice.length);
+    for (let i = 0; i < slice.length; i++) {
       byteNumbers[i] = slice.charCodeAt(i);
     }
 
-    var byteArray = new Uint8Array(byteNumbers);
+    let byteArray = new Uint8Array(byteNumbers);
 
     byteArrays.push(byteArray);
   }
 
-  var blob = new Blob(byteArrays, { type: contentType });
+  let blob = new Blob(byteArrays, { type: contentType });
   return blob;
 }
 
@@ -36,12 +36,14 @@ const videoConstraints = {
 };
 
 function Auth() {
+
   const webcamRef = React.useRef(null);
+
   const [image, setImage] = useState("");
   const [email, setEmail] = useState("");
-  const [token, setToken] = useState("");
+  const [password, setPassword] = useState("");
+
   const [alert, setAlert] = useState(false);
-  const [emailVerfiy, setEmailVerify] = useState(false);
   const [alertMessage, setAlertMessage] = useState({
     message: "testin",
     status: "success",
@@ -51,43 +53,31 @@ function Auth() {
   const [regEmail, setRegEmail] = useState("");
   const [regPhone, setRegPhone] = useState("");
   const [regPassword, setRegPassword] = useState("");
-  let org = "6263f84682fc0d9851d827f8";
+
   let history = useNavigate();
 
-  const VerifyEmail = async () => {
 
-    const data = await axios.post('http://localhost:5000/login-req', { "email": email, "organization": org });
-    console.log(data.data)
-    if (typeof data.data === "number") {
-      setEmailVerify(true);
+  const userLogin = async () => {
+
+    const verifySchema = Joi.object({
+      email: Joi.string().email({ tlds: { allow: false } }).required(),
+      password: Joi.string().alphanum().max(50).min(3).required()
+    })
+
+    const { error } = await verifySchema.validate({ email, password });
+
+    if (error) {
+      setAlertMessage({ message: `${error}`, status: "warning" });
+      setAlert(true);
+      return;
     }
+    setAlert(false);
 
-  }
-
-  const dummyDate = async () => {
-    var ImageURL = image; // 'photo' is your base64 image
-    // Split the base64 string in data and contentType
-    var block = ImageURL.split(";");
-    // Get the content type of the image
-    var contentType = block[0].split(":")[1]; // In this case "image/gif"
-    // get the real base64 content of the file
-    var realData = block[1].split(",")[1];
-
-    // Convert it to a blob to upload
-    var blob = b64toBlob(realData, contentType);
-
-    const formData = new FormData();
-    formData.append("file", blob);
-    formData.append("email", email);
-    formData.append("organization", org);
-    formData.append("token", token);
-
-    const data = await axios.post("http://localhost:5000/login", formData);
+    // // sending request
+    const data = await axios.post("http://localhost:5000/login-user", { email, password });
     console.log(data);
-    setImage("");
     setEmail("");
-    // console.log(data.data._id['$oid'])
-    // console.log(Object.keys(data.data).length)
+    setPassword("");
     if (Object.keys(data.data).length > 1) {
       sessionStorage.setItem("user_id", data.data.company_id);
       window.location.reload();
@@ -98,40 +88,58 @@ function Auth() {
     }
   };
 
+
+
   const registerUser = async () => {
-    var ImageURL = image; // 'photo' is your base64 image
-    // Split the base64 string in data and contentType
-    var block = ImageURL.split(";");
-    // Get the content type of the image
-    var contentType = block[0].split(":")[1]; // In this case "image/gif"
-    // get the real base64 content of the file
-    var realData = block[1].split(",")[1];
 
-    // Convert it to a blob to upload
-    var blob = b64toBlob(realData, contentType);
+    // validation input feilds
+    const registerSchema = Joi.object({
+      regName: Joi.string().alphanum().max(30).min(3).required(),
+      regEmail: Joi.string().email({ tlds: { allow: false } }).required(),
+      regPhone: Joi.string().length(10).pattern(/^[0-9]+$/).required(),
+      regPassword: Joi.string().alphanum().max(50).min(3).required()
+    })
 
+    const { error } = await registerSchema.validate({ regName, regEmail, regPhone, regPassword });
+
+    if (error) {
+      console.log(error + " dasd")
+      setAlertMessage({ message: `${error}`, status: "warning" });
+      setAlert(true);
+      return;
+    }
+    setAlert(false);
+
+    // image conversion
+    let ImageURL = image;
+    let block = ImageURL.split(";");
+    let contentType = block[0].split(":")[1];
+    let realData = block[1].split(",")[1];
+    let blob = b64toBlob(realData, contentType);
+
+    // creating formdata
     const formData = new FormData();
-
     formData.append("name", regName);
     formData.append("email", regEmail);
     formData.append("phone", regPhone);
-    // formData.append("password", regPassword);
+    formData.append("password", regPassword);
     formData.append("file", blob);
 
+    // sending request
     const data = await axios.post("http://localhost:5000/user", formData);
     console.log(data);
     setImage("");
     setRegEmail("");
     setRegName("");
     setRegPhone("");
-    // setRegPassword("");
+    setRegPassword("");
     setAlertMessage({ message: data.data.data, status: "success" });
     setAlert(true);
   };
 
+  // capturing image
   const capture = React.useCallback(() => {
     const imageSrc = webcamRef.current.getScreenshot();
-    // console.log("load.... :- " + imageSrc)
     setImage(imageSrc);
   }, [webcamRef]);
 
@@ -182,21 +190,6 @@ function Auth() {
                     <div className="card-3d-wrapper">
                       <div className="card-front">
                         <div className="center-wrap">
-                          {alert && (
-                            <div
-                              className={`alert alert-${alertMessage.status} alert-dismissible fade show`}
-                              role="alert"
-                            >
-                              {alertMessage.message}
-                              <button
-                                type="button"
-                                className="btn-close"
-                                data-bs-dismiss="alert"
-                                aria-label="Close"
-                              ></button>
-                            </div>
-                          )}
-
                           <div className="section text-center">
                             <h4
                               className="mb-4 pb-1"
@@ -204,63 +197,19 @@ function Auth() {
                             >
                               Log In
                             </h4>
-
-                            <div className="form-group">
-                              {
-                                emailVerfiy ?
-                                  <div>
-                                    {image === "" ? (
-                                      <Webcam
-                                        audio={false}
-                                        height={300}
-                                        ref={webcamRef}
-                                        screenshotFormat="image/jpeg"
-                                        width={400}
-                                        videoConstraints={videoConstraints}
-                                      />
-                                    ) : (
-                                      <img
-                                        src={image}
-                                        alt="sadsad"
-                                        id="limage"
-                                        style={{
-                                          marginBottom: "70px",
-                                          marginTop: "65px",
-                                        }}
-                                      />
-                                    )}
-                                  </div> : ""}
-                              {
-                                emailVerfiy ? <div>
-
-                                  {image !== "" ? (
-                                    <button
-                                      type="button"
-                                      className="btn btn-outline-primary custom-button btn-sm"
-                                      onClick={(e) => {
-                                        e.preventDefault();
-                                        setImage("");
-                                      }}
-                                    >
-                                      <i className="fa-solid fa-camera-rotate"></i>
-                                    </button>
-                                  ) : (
-                                    <button
-                                      onClick={(e) => {
-                                        e.preventDefault();
-                                        capture();
-                                      }}
-                                      type="button"
-                                      className="btn btn-outline-primary custom-button btn-sm"
-                                    >
-                                      <i className="fa-solid fa-camera"></i>
-                                    </button>
-                                  )}
-
-                                </div> : ""
-                              }
-
-                            </div>
+                            {alert && (
+                              <div
+                                className={`alert alert-${alertMessage.status} alert-dismissible fade show`}
+                                role="alert"
+                              >
+                                {alertMessage.message}
+                                <button
+                                  type="button"
+                                  className="btn-close"
+                                  onClick={() => setAlert(false)}
+                                ></button>
+                              </div>
+                            )}
                             <div className="form-group">
                               <input
                                 type="email"
@@ -274,39 +223,29 @@ function Auth() {
                               />
                               <i className="input-icon uil uil-at"></i>
                             </div>
+                            <div className="form-group mt-2">
+                              <input
+                                type="password"
+                                name="logpassword"
+                                className="form-style"
+                                onChange={(e) => setPassword(e.target.value)}
+                                value={password}
+                                placeholder="Your Password"
+                                id="logpassword"
+                                autocomplete="off"
+                              />
+                              <i className="input-icon uil uil-lock-alt"></i>
+                            </div>
 
-                            {
-                              emailVerfiy ? "" : <button
-                                className="btn-custom mt-4"
-                                onClick={() => VerifyEmail()}
-                              >Verify
-                              </button>
-                            }
-
-                            {emailVerfiy && email && (
-                              <>
-                                <div className="form-group mt-3">
-                                  <input
-                                    type="number"
-                                    name="logtoken"
-                                    value={token}
-                                    onChange={(e) => setToken(e.target.value)}
-                                    className="form-style"
-                                    placeholder="Your Token"
-                                  />
-                                  <i className="input-icon uil uil-at"></i>
-                                </div>
-                                <button
-                                  className="btn-custom mt-4"
-                                  onClick={() => dummyDate()}
-                                >
-                                  submit
-                                </button>
-                              </>
-                            )}
+                            <button
+                              className="btn-custom mt-4"
+                              onClick={() => userLogin()}
+                            >submit</button>
                           </div>
                         </div>
                       </div>
+
+                      {/* user register code */}
                       <div className="card-back">
                         <div className="center-wrap">
                           <div
@@ -321,6 +260,20 @@ function Auth() {
                             >
                               Register
                             </h4>
+                            {alert && (
+                              <div
+                                className={`alert alert-${alertMessage.status} alert-dismissible fade show`}
+                                role="alert"
+                              >
+                                {alertMessage.message}
+                                <button
+                                  type="button"
+                                  className="btn-close"
+                                  onClick={() => setAlert(false)}
+
+                                ></button>
+                              </div>
+                            )}
                             <div className="form-group">
                               {image === "" ? (
                                 <Webcam
@@ -371,8 +324,8 @@ function Auth() {
                                 type="text"
                                 name="logemail"
                                 className="form-style"
-                                value={regName}
                                 onChange={(e) => setRegName(e.target.value)}
+                                value={regName}
                                 placeholder="Your Name"
                                 id="logemail"
                                 autocomplete="off"
@@ -384,8 +337,8 @@ function Auth() {
                                 type="email"
                                 name="logemail"
                                 className="form-style"
-                                value={regEmail}
                                 onChange={(e) => setRegEmail(e.target.value)}
+                                value={regEmail}
                                 placeholder="Your Email"
                                 id="logemail"
                                 autocomplete="off"
@@ -397,8 +350,8 @@ function Auth() {
                                 type="number"
                                 name="logpass"
                                 className="form-style"
-                                value={regPhone}
                                 onChange={(e) => setRegPhone(e.target.value)}
+                                value={regPhone}
                                 placeholder="Your Phone"
                                 id="logpass"
                                 autocomplete="off"
@@ -410,8 +363,8 @@ function Auth() {
                                 type="password"
                                 name="logpassword"
                                 className="form-style"
-                                value={regPassword}
                                 onChange={(e) => setRegPassword(e.target.value)}
+                                value={regPassword}
                                 placeholder="Your Password"
                                 id="logpassword"
                                 autocomplete="off"
