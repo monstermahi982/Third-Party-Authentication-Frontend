@@ -32,7 +32,7 @@ function Org() {
     }
     setAlert(false);
 
-    const data = await axios.post("http://localhost:5000/company", { name, email, phone });
+    const data = await axios.post("http://65.20.66.129/company", { name, email, phone });
 
     console.log(data);
 

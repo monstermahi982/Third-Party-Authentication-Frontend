@@ -42,6 +42,20 @@ export default function Home() {
           <span class="visually-hidden">Next</span>
         </button>
       </div>
+      
+      <div
+          class="raw text-center"
+          style={{
+            alignItems: "center",
+            justifyContent: "center",
+            padding: 35,
+          }}
+        >
+          <h1>{"Built with Security & Comfort."}</h1>
+          <hr />
+          <p class="lead">Welcome to Third Party Authentication website</p>
+        </div>
+
     </>
   );
 }

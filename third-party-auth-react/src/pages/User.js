@@ -33,7 +33,7 @@ function User() {
 
   const fetchHistory = async (id) => {
 
-    let history = await axios.get("http://localhost:5000/history/" + id);
+    let history = await axios.get("http://65.20.66.129/history/" + id);
 
     console.log(history.data)
     setUserHistory(history.data);
@@ -42,7 +42,7 @@ function User() {
 
   const getUser = async (user) => {
 
-    let userDate = await axios.get("http://localhost:5000/user/" + user);
+    let userDate = await axios.get("http://65.20.66.129/user/" + user);
     console.log(userDate, "geetting dsgj ")
 
     setRegEmail(userDate.data.email)
@@ -61,7 +61,7 @@ function User() {
 
     // using axios
 
-    let user = await axios.put("http://127.0.0.1:5000/user/" + userId, userDate);
+    let user = await axios.put("http://65.20.66.129/user/" + userId, userDate);
     if (user) {
       setAlertMessage({
         message: "User Updated",
