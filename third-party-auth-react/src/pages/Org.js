@@ -32,7 +32,7 @@ function Org() {
     }
     setAlert(false);
 
-    const data = await axios.post("http://65.20.66.129:5000/company", { name, email, phone });
+    const data = await axios.post("https://messwala.tech/company", { name, email, phone });
 
 
     console.log(data);
