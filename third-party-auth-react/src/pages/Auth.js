@@ -74,7 +74,7 @@ function Auth() {
     setAlert(false);
 
     // // sending request
-    const data = await axios.post("http://65.20.66.129/login-user", { email, password });
+    const data = await axios.post("http://65.20.66.129:5000/login-user", { email, password });
     console.log(data);
     setEmail("");
     setPassword("");
@@ -126,7 +126,7 @@ function Auth() {
     formData.append("file", blob);
 
     // sending request
-    const data = await axios.post("http://65.20.66.129/user", formData);
+    const data = await axios.post("http://65.20.66.129:5000/user", formData);
     console.log(data);
     setImage("");
     setRegEmail("");
